@@ -19,7 +19,10 @@ void myFrame() {
         ImGui::Text("Hello:");
         ImGui::SameLine();
         ImGui::PushItemWidth(180);
-        ImGui::InputText("##unique", name, IM_ARRAYSIZE(name));
+        if (ImGui::InputText("##unique", name, IM_ARRAYSIZE(name), ImGuiInputTextFlags_EnterReturnsTrue)) {
+            editing = false;
+        }
+
         ImGui::PopItemWidth();
     }
 
