@@ -33,38 +33,45 @@ pub fn main() !void {
     var gpa_instance = std.heap.GeneralPurposeAllocator(.{}){};
     const gpa = gpa_instance.allocator();
 
+    // OS window
     var backend = try dvui.backend.initWindow(.{
         .allocator = gpa,
         .size = .{ .w = 400.0, .h = 300.0 },
         .vsync = true,
         .title = "dvui Zig",
     });
-    backend.initial_scale = 2;
+    backend.initial_scale = 2; // make demo bigger
     defer backend.deinit();
 
+    // dvui Window maps to OS window
     var win = try dvui.Window.init(@src(), gpa, backend.backend(), .{});
     defer win.deinit();
 
     win.theme = win.themes.get("Adwaita Dark").?;
 
     main_loop: while (true) {
+        // frame setup
         const nstime = win.beginWait(backend.hasEvent());
         try win.begin(nstime);
 
+        // queue all events
         const quit = try backend.addAllEvents(&win);
         if (quit) break :main_loop;
 
+        // clear background
         _ = dvui.backend.c.SDL_SetRenderDrawColor(backend.renderer, 0, 0, 0, 255);
         _ = dvui.backend.c.SDL_RenderClear(backend.renderer);
 
         try myFrame();
 
+        // frame end
         const end_micros = try win.end(.{});
 
         backend.setCursor(win.cursorRequested());
         backend.textInputRect(win.textInputRequested());
         backend.renderPresent();
 
+        // wait for next event or animation
         const wait_event_micros = win.waitTime(end_micros, null);
         backend.waitEventTimeout(wait_event_micros);
     }
