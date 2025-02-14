@@ -24,7 +24,7 @@ void stop_editing() {
 
     // set label_hello and add
     char temp[70];
-    snprintf(temp, 70, "Hello:      %s", name);
+    snprintf(temp, 70, "Hello %s", name);
     gtk_label_set_label(label_hello, temp);
     gtk_box_append(hbox, (GtkWidget*) label_hello);
 
@@ -64,26 +64,31 @@ void startup (GtkApplication* app, gpointer data) {
     gtk_window_set_title (GTK_WINDOW (window), "Gtk C");
     gtk_window_set_default_size (GTK_WINDOW (window), 200, 160);
 
-    // setup all widgets
+    // vertical box
     GtkBox* box = (GtkBox*) gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
     gtk_window_set_child((GtkWindow*) window, (GtkWidget*) box);
 
+    // horizontal box
     hbox = (GtkBox*) gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_box_append((GtkBox*) box, (GtkWidget*) hbox);
 
+    // hello label
     char temp[70];
-    snprintf(temp, 70, "Hello:      %s", name);
+    snprintf(temp, 70, "Hello %s", name);
     label_hello = (GtkLabel*) gtk_label_new(temp);
     g_object_set(label_hello, "margin-start", 10, "margin-top", 10, "margin-end", 10, "margin-bottom", 10, NULL);
     gtk_box_append(hbox, (GtkWidget*) label_hello);
 
-    label_entry = (GtkLabel*) gtk_label_new("Hello:");
+    // label when editing (only creation)
+    label_entry = (GtkLabel*) gtk_label_new("Name?");
     g_object_set(label_entry, "margin-start", 10, "margin-top", 10, "margin-end", 10, "margin-bottom", 10, NULL);
 
+    // text entry (only creation)
     entry = (GtkEntry*) gtk_entry_new();
     gtk_editable_set_max_width_chars((GtkEditable*) entry, 10);
     g_signal_connect(entry, "activate", G_CALLBACK(entry_enter), NULL);
 
+    // button for state change
     button = (GtkButton*) gtk_button_new();
     gtk_button_set_label(button, "Edit");
     g_object_set(button, "margin-start", 10, "margin-top", 10, "margin-end", 10, "margin-bottom", 10, NULL);

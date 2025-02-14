@@ -15,13 +15,13 @@ void myFrame() {
     ImGui::Dummy(ImVec2(0, 10));
 
     if (!editing) {
-        ImGui::Text("Hello: %s", name);
+        ImGui::Text("Hello %s", name);
     } else {
         ImGui::AlignTextToFramePadding();
-        ImGui::Text("Hello:");
+        ImGui::Text("Name?");
         ImGui::SameLine();
         ImGui::PushItemWidth(180);
-        if (ImGui::InputText("##unique", name, IM_ARRAYSIZE(name), ImGuiInputTextFlags_EnterReturnsTrue)) {
+        if (ImGui::InputText("label##extra", name, IM_ARRAYSIZE(name), ImGuiInputTextFlags_EnterReturnsTrue)) {
             editing = false;
         }
 
@@ -30,6 +30,7 @@ void myFrame() {
 
     ImGui::Dummy(ImVec2(0, 10));
 
+    // ID is hash of label
     if (ImGui::Button(editing ? "Done" : "Edit")) {
         editing = !editing;
     }
@@ -86,6 +87,7 @@ int main(int, char**) {
         ImGui_ImplSDL2_NewFrame();
         ImGui::NewFrame();
 
+        // just a normal function call
         myFrame();
 
         // frame end
@@ -95,9 +97,11 @@ int main(int, char**) {
         SDL_SetRenderDrawColor(renderer, (Uint8)(clear_color.x * 255), (Uint8)(clear_color.y * 255), (Uint8)(clear_color.z * 255), (Uint8)(clear_color.w * 255));
         SDL_RenderClear(renderer);
         ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
+
+        // waits for vsync
         SDL_RenderPresent(renderer);
 
-        // no wait
+        // no wait for events
     }
 
     // app cleanup

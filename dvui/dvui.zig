@@ -10,11 +10,14 @@ fn myFrame() !void {
         var hbox = try dvui.box(@src(), .horizontal, .{ .min_size_content = .{ .h = 38 } });
         defer hbox.deinit();
 
+        // everything else in this scope is inside hbox
+
         if (!editing) {
-            try dvui.label(@src(), "Hello:    {s}", .{std.mem.sliceTo(&name, 0)}, .{ .gravity_y = 0.5 });
+            const name_slice = std.mem.sliceTo(&name, 0);
+            try dvui.label(@src(), "Hello {s}", .{name_slice}, .{ .gravity_y = 0.5 });
         } else {
-            try dvui.label(@src(), "Hello:", .{}, .{ .gravity_y = 0.5 });
-            var te = try dvui.textEntry(@src(), .{ .text = .{ .buffer = &name } }, .{ .gravity_y = 0.5, .min_size_content = .{ .w = 80 } });
+            try dvui.label(@src(), "Name?", .{}, .{ .gravity_y = 0.5 });
+            var te = try dvui.textEntry(@src(), .{ .text = .{ .buffer = &name } }, .{});
             if (te.enter_pressed) {
                 editing = false;
             }
@@ -22,6 +25,7 @@ fn myFrame() !void {
         }
     }
 
+    // ID is based on @src()
     if (try dvui.button(@src(), if (editing) "Done" else "Edit", .{}, .{})) {
         editing = !editing;
     }
@@ -62,6 +66,7 @@ pub fn main() !void {
         _ = dvui.backend.c.SDL_SetRenderDrawColor(backend.renderer, 0, 0, 0, 255);
         _ = dvui.backend.c.SDL_RenderClear(backend.renderer);
 
+        // functions are the unit of abstraction
         try myFrame();
 
         // frame end
